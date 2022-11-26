@@ -1,10 +1,40 @@
 # metar-map
 Python-based metar map software
 
-# Requirements
-GDAL==3.5.3
-Jinja2==3.1.2
-MarkupSafe==2.1.1
-numpy==1.23.4
-pdoc==12.3.0
-Pygments==2.13.0
+# Installation
+
+sudo raspi-config. - set wifi
+sudo apt update && sudo apt upgrade
+sudo apt install git
+sudo apt install python3-pip
+sudo pip3 install rpi_ws281x adafruit-circuitpython-neopixel
+sudo pip3 install pandas
+sudo apt install libatlas-base-dev
+
+# Set up crontab
+
+*/5 7-21 * * *  sudo python3 /home/pi/metar.py
+
+
+
+
+# RaspiWiFi
+
+Use Buster Lite build - means you have to use python3
+
+git clone github.com/RichardPilbery/RaspiWiFi.git  (I've forked a copy)
+
+Errors about cryptography, but otherwise it works!
+
+# Couldn't get it to work. Abandoned and will try to roll my own.
+
+
+# OLED display
+
+https://www.youtube.com/watch?v=lRTQ0NsXMuw&ab_channel=MichaelKlements
+https://www.the-diy-life.com/add-an-oled-stats-display-to-raspberry-pi-os-bullseye/
+
+
+
+
+
