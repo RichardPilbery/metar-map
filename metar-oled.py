@@ -1,5 +1,9 @@
 import pandas as pd
 import board
+from board import SCL, SDA
+import busio
+from PIL import Image, ImageDraw, ImageFont
+import adafruit_ssd1306
 import neopixel
 import time
 import math
@@ -7,6 +11,32 @@ import math
 def strToInt(string, pressure=''):
     step1 = float(string) * 33.86 if pressure == 'hpa' else float(string)
     return 0 if math.isnan(step1) else math.floor(step1)
+
+
+def oledMETAR(display, airport, flight_category, obs_time, wind_speed, wind_dir, temp, dewpoint, pressure):
+    
+    print('Inside oledMETAR')
+    width = disp.width
+    height = disp.height
+    
+    x = 0
+    image = Image.new("1", (width, height))
+    draw = ImageDraw.Draw(image)
+	# Draw a black filled box to clear the image.
+    draw.rectangle((0, 0, width, height), outline=0, fill=0)
+
+    font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', 16)
+    mediumFont = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', 14)
+    smallFont = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 10)
+
+    draw.text((x, 0), f"{airport} {flight_category}", font=font, fill=255)
+    draw.text((x + 90, 2), f"{obs_time[11:16]}Z", font=smallFont, fill=255)
+    draw.text((x, 18), f"{strToInt(wind_speed)}/{strToInt(wind_dir)} {strToInt(temp)}/{strToInt(dewpoint)}C", font=font, fill=255)
+    draw.text((x, 36), f"Q{strToInt(pressure, 'hpa')}", font=font, fill=255)
+
+    disp.image(image)
+    disp.show()
+
 
 LED_PIN			= board.D18		# GPIO pin connected to the pixels (18 is PCM).
 PIXEL_ORDER		= neopixel.RGB		# Strip type and colour ordering
@@ -35,6 +65,10 @@ with file as f:
 file.close()
 
 pixels = neopixel.NeoPixel(LED_PIN, len(airports), brightness = 0.2, pixel_order = PIXEL_ORDER, auto_write = False)
+
+i2c = busio.I2C(SCL, SDA)
+disp = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+disp.poweron()
 
 try:
 
@@ -86,6 +120,15 @@ try:
         wind_cycle = False if wind_cycle else True
         loop_time -= 1
 
+        if displayLoopTimer == 0:
+            displayLoopTimer = 4
+            print(f"Checking index number {displayAirport}")
+            metar = airport_metar_df.iloc[displayAirport]
+            displayAirport += 1
+            displayAirport = 0 if displayAirport == len(airport_metar_df) else displayAirport
+            print(f"displayAirport value is {displayAirport}")
+            oledMETAR(disp, metar['station_id'], metar['flight_category'], metar['observation_time'], metar['wind_speed_kt'], metar['wind_dir_degrees'], metar['temp_c'], metar['dewpoint_c'], metar['altim_in_hg'])
+
         displayLoopTimer -= 1
 
 finally:
@@ -93,4 +136,7 @@ finally:
         pixels[i] = COLOUR_DICT['OFF']
     pixels.show()
 
+    disp.fill(0)
+    disp.show()
+    disp.poweroff()
 
