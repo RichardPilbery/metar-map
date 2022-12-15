@@ -76,7 +76,7 @@ try:
                         elif a_metar.wind_speed_kt.values[0] > WIND_KTS :
                             colour = COLOUR_DICT['OFF']
 
-            print(f"Airport {a} and flight_category is {flight_category}. Setting LED {i} for {a} to {colour}")
+                print(f"Airport {a} and flight_category is {flight_category}. Setting LED {i} for {a} to {colour}")
 
             pixels[i] = colour
             i += 1

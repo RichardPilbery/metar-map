@@ -13,7 +13,7 @@ sudo apt install libatlas-base-dev
 
 # Set up crontab
 
-*/5 7-21 * * *  sudo python3 /home/pi/metar.py
+*/5 7-21 * * *  sudo kill `pgrep python`; sudo python /home/pi/metar.py
 
 
 
@@ -33,6 +33,8 @@ Errors about cryptography, but otherwise it works!
 
 https://www.youtube.com/watch?v=lRTQ0NsXMuw&ab_channel=MichaelKlements
 https://www.the-diy-life.com/add-an-oled-stats-display-to-raspberry-pi-os-bullseye/
+
+NOTE: May need to install i2c tools too: sudo apt install i2c-tools
 
 
 
